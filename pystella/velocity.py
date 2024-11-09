@@ -241,7 +241,7 @@ def compute_vel_swd(name, path, z=0., is_info=False):
     return res
 
 
-def compute_vel_res_tt(name, path, z=0., t_beg=0.1, t_end=None, line_header=80,
+def compute_vel_res_tt(name, path, z=0., t_beg=0.01, t_end=None, line_header=80,
                        is_info=False, is_new_std=False):
     if is_info:
         print(f'Run model: {name} in dir: {path} z= {z}')
@@ -263,7 +263,7 @@ def compute_vel_res_tt(name, path, z=0., t_beg=0.1, t_end=None, line_header=80,
     for i, (t, start, end) in enumerate(res.blocks()):
         if t < min(tt['time']) or t > max(tt['time']):
             if is_info:
-                print('Error: nblock= {}: t_res[={:e}] not in range time_tt: {:e}, {:e}'.format(i, t, min(tt['time']),
+                print('Error: nblock= {} [{}:{}]: t_res[={:e}] not in range time_tt: {:e}, {:e}'.format(i, start, end, t, min(tt['time']),
                                                                                                 max(tt['time'])))
             continue
 
@@ -276,6 +276,10 @@ def compute_vel_res_tt(name, path, z=0., t_beg=0.1, t_end=None, line_header=80,
             if is_info:
                 # print('            blockR14= {}   blockV8= {}'.format(block['R14'], block['V8']))
                 print('nblock= {} [{}:{}]: t= {:e} r_ph= {:e}   vel= {:e}'.format(i, start, end, t, r_ph, vel))
+                # print(block['R14'] - r_ph / 1e14)
+                # idx = (block['R14'] - r_ph / 1e14).argmin()
+                # print('   idx= {}  R14= {:e}   vel= {:e}'.format(idx, block['R14'][idx], block['V8'][idx]))
+
             vels.append(vel)
         else:
             idx = np.abs(block['R14'] - r_ph / 1e14).argmin()
