@@ -97,7 +97,7 @@ class Spectrum(object):
         sp = Spectrum(self.Name, self.Freq[is_freq], flux=self.Flux[is_freq])
         return sp
 
-    def T_color_zeta(self, is_quiet=True, is_Fj=False):
+    def T_color_zeta(self, is_quiet=True, is_Fj=False, Tinit = None):
         from pystella.fit import mpfit
         """
         Fitting Spectrum by planck function and find the color temperature
@@ -116,7 +116,11 @@ class Spectrum(object):
             res = np.abs(self.Flux - wbb)
             return 0, res
 
-        Tinit, W = self.T_wien, 1.
+        # Tinit, W = self.T_wien, 1.
+        if Tinit is None:
+            Tinit = self.T_wien
+        W = 1
+
         xtol = 1e-10
         ftol = 1e-10
         gtol = 1e-10
@@ -650,11 +654,11 @@ class SeriesSpectrum(object):
 
         Parameters
         ----------
-            - bands: broadbands 
+            - bands: broadbands
             - z: redshift. Default: 0
             - d: distance [cm]. Default: 10 pc in cm
-            - magnification: lens magnification. Default: 1 
-        
+            - magnification: lens magnification. Default: 1
+
         Returns
         -------
 

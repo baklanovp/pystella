@@ -586,7 +586,7 @@ def interval2float(v):
     elif len(a) == 2:
         return list(map(float, str(v).split(':')))
     elif len(a) == 1:
-        return float(v[0])
+        return float(a[0])  # Изменено на a[0]
     else:
         return None
 
