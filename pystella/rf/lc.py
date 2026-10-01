@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 
 from pystella.rf import band
@@ -7,7 +8,7 @@ __author__ = 'bakl'
 
 
 class LightCurve(TimeSeries):
-    def __init__(self, b, time, mags, errs=None, tshift=0., mshift=0.):
+    def __init__(self, b:str|band.Band, time, mags, errs=None, tshift:float=0., mshift:float=0.):
         """Creates a Light Curve instance.  Required parameters:  b (band), time, mags."""
         if isinstance(b, str):  # convert band-name to band instance
             if band.is_exist(b):
@@ -50,7 +51,7 @@ class LightCurve(TimeSeries):
         return self._mshift
 
     @mshift.setter
-    def mshift(self, shift):
+    def mshift(self, shift:float):
         self._mshift = shift
 
     @property
@@ -71,7 +72,7 @@ class LightCurve(TimeSeries):
             res = np.array([self.Time, self.Mag])
         return res.T
 
-    def copy_tlim(self, tlim=None):
+    def copy_tlim(self, tlim=None|tuple[float,float]):
         errs = None
 
         if tlim is not None:
@@ -91,7 +92,7 @@ class LightCurve(TimeSeries):
         lc.mshift = self.mshift
         return lc
 
-    def copy(self, name=None, f=None):
+    def copy(self, name:str=None, f=None):
         lc = super(type(self), self).copy(name=name, f=f)
         lc.mshift = self.mshift
         return lc
@@ -131,7 +132,7 @@ class LightCurve(TimeSeries):
         return lc
 
     @classmethod
-    def Merge(cls, lc1, lc2):
+    def Merge(cls, lc1: type[LightCurve], lc2: type[LightCurve]):
         if lc1.Band.Name != lc2.Band.Name:
             raise ValueError("Merging is possible only for the same filters: {} VS {}".
                              format(lc1.Band.Name, lc2.Band.Name))
@@ -151,7 +152,7 @@ class LightCurve(TimeSeries):
         return res
 
 
-def LC_interp(orig, time, is_spline=True):
+def LC_interp(orig: type[LightCurve], time, is_spline=True):
     if is_spline:
         from scipy.interpolate import InterpolatedUnivariateSpline
         s = InterpolatedUnivariateSpline(orig.Time, orig.Mag, k=1)
@@ -177,7 +178,7 @@ def LC_interp(orig, time, is_spline=True):
 class SetLightCurve(SetTimeSeries):
     """Set of the Light Curves"""
 
-    def __init__(self, name=''):
+    def __init__(self, name:str=''):
         """Creates a Set of Light Curves."""
         super().__init__(name)
         # self._loop = 0
@@ -196,13 +197,13 @@ class SetLightCurve(SetTimeSeries):
         res = [b.Name for b in self.Bands]
         return res
 
-    def IsBand(self, bname):
+    def IsBand(self, bname: str) -> bool:
         return bname in self.BandNames
 
-    def add(self, lc):
+    def add(self, lc: type[LightCurve]):
         self._set[lc.Band.Name] = lc
 
-    def get(self, bn, default=None):
+    def get(self, bn: str, default: type[LightCurve]=None):
         for n, lc in self.Set.items():
             if lc.Band.Name == bn:
                 return lc
@@ -278,7 +279,7 @@ class SetLightCurve(SetTimeSeries):
         return res
 
     @classmethod
-    def Merge(cls, curves1, curves2, name=None):
+    def Merge(cls, curves1, curves2, name:str=None):
         if curves1 is None:
             return curves2
         if curves2 is None:

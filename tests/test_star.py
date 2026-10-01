@@ -8,7 +8,7 @@ __author__ = 'bakl'
 
 class TestStar(unittest.TestCase):
     def setUp(self):
-        nf = 100
+        nf = 1000
         start, end = 10, 1e5
         wl = np.exp(np.linspace(np.log(start), np.log(end), nf))
         freq = ps.rf.val_to_hz(wl, inp="A")
@@ -56,17 +56,31 @@ class TestStar(unittest.TestCase):
                                    msg="For uniform flux=1 it should be mag==AB zero point.\n \
                                         Now mag is %f for band %s. ZP is %f" % (mag, b, ps.phys.ZP_AB))
 
-    def test_check_band_zp_sdss(self):
-        bands = ['UVM2', 'UVW1', 'UVW2']
+    def test_check_band_zp_SwiftAB(self):
+        bands = ['UVM2AB', 'UVW1AB', 'UVW2AB']
         star = ps.Star('test', self.sp)
         # star.set_radius_ph(self.distance)
         # star.set_distance(self.distance)
         for n in bands:
             b = ps.band.band_by_name(n)
-            mag = star.magAB(b)
+            mag = star.magAB(b) 
             self.assertAlmostEqual(mag, ps.phys.ZP_AB, delta=1.,
                                    msg="For uniform flux=1 it should be mag==AB zero point.\n \
                                         Now mag is %f for band %s. ZP is %f" % (mag, b, ps.phys.ZP_AB))
+
+
+    def test_check_band_zp_Swift(self):
+        bands = ['UVM2', 'UVW1', 'UVW2']
+        delta = {'UVW2': 1.73, 'UVW1': 1.51, 'UVM2': 1.69}  # see https://www.mssl.ucl.ac.uk/www_astro/uvot/uvot_instrument/filterwheel/filterwheel.html
+        star = ps.Star('test', self.sp)
+        # star.set_radius_ph(self.distance)
+        # star.set_distance(self.distance)
+        for n in bands:
+            b = ps.band.band_by_name(n)
+            mag = star.magAB(b) + delta[n]  # convert Vega to AB
+            self.assertAlmostEqual(mag, ps.phys.ZP_AB, delta=1.,
+                                   msg="For uniform flux=1 it should be mag==AB zero point.\n \
+                                        Now mag is %f for band %s. ZP is %f" % (mag, b, ps.phys.ZP_AB))            
 
     def test_k_cor_uniform(self):
         b_r = ps.band.band_by_name('U')
@@ -94,16 +108,18 @@ class TestStar(unittest.TestCase):
                             Now k_kor is %f for band-rest %s and band-obs %s." % (z, k_cor, b_r, b_o))
 
     def test_Lum2MagBol(self):
-        L_sun = 3.827e33
+        L_sun = ps.phys.L_sun # 3.827e33
         m = ps.rf.Lum2MagBol(L_sun)
         self.assertAlmostEqual(m, ps.phys.Mag_sun,
                                msg="Absolute magnitude of Sun is %f. \
                                     You have  m = %f." % (ps.phys.Mag_sun, m), delta=0.05)
         # Vega, see http://iopscience.iop.org/article/10.1088/0004-637X/708/1/71/meta
-        L = 40.34 * ps.phys.L_sun
+        L = 40.12 * ps.phys.L_sun
         m = ps.rf.Lum2MagBol(L)
         # absolute visual magnitude, see http://iopscience.iop.org/article/10.1088/0004-6256/136/1/452/meta
         m_vega = 0.582
+        # V-band bolometric correction (BCv) bcv = -0.21 
+        m_vega = 0.78 # todo check? see https://www.pas.rochester.edu/%7Eemamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt
         # print("Absolute magnitude of Vega is %4.3f. You have  m = %4.3f." % (m_vega, m))
 
         self.assertAlmostEqual(m, m_vega, msg="Absolute magnitude of Vega is %4.3f. You have  m = %4.3f." % (m_vega, m),

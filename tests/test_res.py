@@ -56,13 +56,13 @@ class TestStellaRes(unittest.TestCase):
         info = self.res.Info.parse()
 
         tmp = 1000.
-        self.assertEquals(info.R, tmp, "Radius [%f] should be %f" % (info.R, tmp))
+        self.assertEqual(info.R, tmp, "Radius [%f] should be %f" % (info.R, tmp))
 
         tmp = 15.
-        self.assertEquals(info.M, tmp, "Mass [%f] should be %f" % (info.M, tmp))
+        self.assertEqual(info.M, tmp, "Mass [%f] should be %f" % (info.M, tmp))
 
         tmp = 15.
-        self.assertEquals(info.E, tmp, "Ebstht [%f] should be %f" % (info.E, tmp))
+        self.assertEqual(info.E, tmp, "Ebstht [%f] should be %f" % (info.E, tmp))
 
     def test_res_times(self):
         res = []

@@ -1,3 +1,5 @@
+import numpy as np
+
 __author__ = 'bakl'
 
 
@@ -60,7 +62,27 @@ class phys:
         """Takes module distance and return the distance in pc"""
         return 10.0**((md + 5.) / 5.)
 
+    @staticmethod
+    def MagBol2Lum(mag):
+        """Convert abs. bol. magnitude to bolometric luminosity"""
+        lum = 10. ** (0.4 * (phys.Mag_sun - mag)) * phys.L_sun
+        return lum
 
+    @staticmethod
+    def Flux2MagAB(f):
+        """Convert monochromatic flux [ erg sec^-1 cm^-2 Hz^-1] to AB magnitudes"""
+        # ab = 3631e-23  # erg
+        mag = -2.5 * np.log10(f) + phys.ZP_AB
+        return mag
+
+    @staticmethod
+    def MagAB2Flux(ab):
+        """Convert AB magnitudes to monochromatic flux [ erg sec^-1 cm^-2 Hz^-1]
+        see http://www.jstor.org/stable/10.1086/429382
+        """
+        zp_def = 3631  # in Jy
+        f = zp_def * phys.jy_to_erg * 10 ** (-0.4 * ab)
+        return f
 # def dist2MD(d):
 #     """
 #     Convert the distance [pc] to the Module Distance
@@ -90,3 +112,4 @@ def cosmology_D_by_z(z, H0=67.7, Omega_m=0.31, Omega_e=0.69):
     D = (1. + z) * c / H0 * \
         quad(lambda zz: 1 / np.sqrt(Omega_m * (1. + zz) ** 3 + Omega_e), 0, z)[0]
     return D
+

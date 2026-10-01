@@ -3,7 +3,6 @@ from os.path import dirname
 
 import numpy as np
 
-from pystella.rf.rad_func import MagAB2Flux, Flux2MagAB, MagBol2Lum
 from pystella.util.phys_var import phys
 
 __author__ = 'bakl'
@@ -11,7 +10,6 @@ __author__ = 'bakl'
 
 # see bands: http://svo2.cab.inta-csic.es/theory/fps3/index.php?mode=browse&gname=GALEX
 # see personal page Brad Tucker: http://www.mso.anu.edu.au/~brad/filters.html
-
 
 class Band(object):
     IsLoad = False
@@ -180,7 +178,7 @@ class Band(object):
     @property
     def zp_AB_vega(self):
         fl_A_zp = self.zp_vega_Jy()
-        return Flux2MagAB(fl_A_zp * 1e-23)
+        return phys.Flux2MagAB(fl_A_zp * 1e-23)
 
     # @property
     # def wl_eff(self):
@@ -305,9 +303,9 @@ class Band(object):
         if not self.is_Jy and not self.is_zp:
             return
         if self.is_zp:
-            self._jy = MagAB2Flux(self.zp) * 1e23
+            self._jy = phys.MagAB2Flux(self.zp) * 1e23
         if self.is_Jy:
-            self._zp = Flux2MagAB(self.Jy * 1e-23)
+            self._zp = phys.Flux2MagAB(self.Jy * 1e-23)
 
     def clone(self, name):
         """
@@ -561,7 +559,7 @@ class Band(object):
         return res
 
     def mag2lum(self, mags):
-        return MagBol2Lum(mags)
+        return phys.MagBol2Lum(mags)
 
     # def mag2lum(self, mag):
     #     if self.MagSunData is None:
@@ -608,7 +606,7 @@ class BandUni(Band):
         return res
 
     def mag2lum(self, mags):
-        return MagBol2Lum(mags)
+        return phys.MagBol2Lum(mags)
 
 
     @classmethod

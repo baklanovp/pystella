@@ -1,3 +1,4 @@
+from __future__ import annotations
 import csv
 import os
 
@@ -322,7 +323,7 @@ def curves2nparraymix(curves):
 
 
 def curves_compute(name, path, bands, z=0., distance=10., magnification=1.,
-                   **kwargs):
+                   **kwargs) -> type[SetLightCurve]:
     """
         Compute magnitude in bands for the 'name' model.
     :param name: the name of a model and data files

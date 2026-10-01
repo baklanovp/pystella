@@ -1,8 +1,8 @@
 import numpy as np
 
-from pystella.rf import Band
-from pystella.rf.rad_func import Flux2MagAB
-from pystella.util.phys_var import phys
+from ..rf.band import Band
+from ..rf.rad_func import Flux2MagAB
+from ..util.phys_var import phys
 
 __author__ = 'bakl'
 
@@ -168,7 +168,8 @@ class Star:
         return a
 
     def magAB(self, b, kind='spline'):  # kind='spline' log  line
-        response = Band.response_nu(self.Freq, self.FluxObs, b)
+        # response = Band.response_nu(self.Freq, self.FluxObs, b)
+        response = b.response_freq(self.Freq, self.FluxObs)
         if response <= 0:
             raise ValueError("Spectrum should be more 0: %f" % response)
 

@@ -129,15 +129,12 @@ def Lum2MagBol(l):
 
 def MagBol2Lum(mag):
     """Convert abs. bol. magnitude to bolometric luminosity"""
-    lum = 10. ** (0.4 * (phys.Mag_sun - mag)) * phys.L_sun
-    return lum
+    return phys.MagBol2Lum(mag)
 
 
 def Flux2MagAB(f):
     """Convert monochromatic flux [ erg sec^-1 cm^-2 Hz^-1] to AB magnitudes"""
-    # ab = 3631e-23  # erg
-    mag = -2.5 * np.log10(f) + phys.ZP_AB
-    return mag
+    return phys.Flux2MagAB(f)
 
 
 def Fnu2Fwl(nu, flux):
@@ -154,9 +151,7 @@ def MagAB2Flux(ab):
     """Convert AB magnitudes to monochromatic flux [ erg sec^-1 cm^-2 Hz^-1]
     see http://www.jstor.org/stable/10.1086/429382
     """
-    zp_def = 3631  # in Jy
-    f = zp_def * phys.jy_to_erg * 10 ** (-0.4 * ab)
-    return f
+    return phys.MagAB2Flux(ab)
 
 
 def kcorrection(series, z, bn_rest, bn_obs, is_verbose=False):

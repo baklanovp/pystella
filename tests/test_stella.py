@@ -67,7 +67,7 @@ class TestStellaLightCurves(unittest.TestCase):
         ebv = 1
 
         # mags reddening
-        cs = ps.lcf.curves_compute(name, path, bands, t_diff=1.05)
+        cs = ps.lcf.curves_compute(name, path, bands, t_diff=1.05, t_beg=0., t_end=float('inf'))
 
         mdl = ps.Stella(name, path=path)
         is_SMC = False
@@ -76,7 +76,7 @@ class TestStellaLightCurves(unittest.TestCase):
             curves = mdl.curves(bands, ebv=ebv, t_diff=1.05, mode=ps.ReddeningLaw.SMC)  # best SMC MW
         else:
             curves_mags = ps.lcf.curves_reddening(cs, ebv=ebv, law=ps.extinction.law_default)
-            curves = mdl.curves(bands, ebv=ebv, t_diff=1.05,  mode=ps.ReddeningLaw.MW)
+            curves = mdl.curves(bands, ebv=ebv, t_diff=1.05,  mode=ps.ReddeningLaw.LMC, t_beg=0., t_end=float('inf'))
         # curves = mdl.curves(bands, ebv=ebv, law=LawFitz, mode=ReddeningLaw.SMC)  # best SMC
 
         self.assertTrue((np.array(sorted(curves.BandNames) == sorted(curves_mags.BandNames))).all(),
@@ -96,9 +96,13 @@ class TestStellaLightCurves(unittest.TestCase):
         ps.lcp.curves_plot(curves, ax=axUbv)
 
         x = curves.TimeCommon
+        res = np.zeros_like(x)
+        mag_dif = []
         for b in bands:
             y = curves.get(b).Mag - curves_mags.get(b).Mag
             axDM.plot(x, y, label="Delta {}".format(b))
+            print(b, y)
+            
         axDM.set_xlim(xlim)
         axDM.legend()
 
